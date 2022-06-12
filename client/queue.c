@@ -648,7 +648,11 @@ int			queue_get_tcp_data(t_conf *conf, t_simple_list *client)
       if ((req.len = windows_client_read(conf, client, queue, &req, max_len)) == 0)
 	return (0);
 #else
-      req.len = read(client->fd_ro, &req.req_data[PACKET_LEN], max_len);
+      char str_size_message[3];
+      read(client->fd_ro, str_size_message, 3);
+      //printf("\nSIZE OF MESSAGE: %d\n", atoi(str_size_message));
+      req.len = read(client->fd_ro, &req.req_data[PACKET_LEN], atoi(str_size_message)); // max_len == 138-7-3 = 128... 
+      //req.len = read(client->fd_ro, &req.req_data[PACKET_LEN], max_len); //----
 #endif
       if (req.len <= 0)
 	{
