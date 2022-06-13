@@ -68,7 +68,7 @@ int		delete_client(t_conf *conf, t_simple_list *client)
   
   DPRINTF(1, "free client \n");
 #ifndef _WIN32
-  if (client->pid > 0)
+  if (client->pid > 0) 
     kill(client->pid, SIGKILL);
   if (conf->sd_tcp)
     waitpid(-1, &status, WNOHANG);
@@ -265,7 +265,18 @@ static int	check_incoming_client(t_conf *conf, t_fd_event *descriptors, int offs
 #ifdef _WIN32
 	  ResetEvent(conf->event_tcp);
 #endif
-	  if (add_client(conf, sd, sd, (process_t)-1))
+
+    FILE *fp; char tcpc_pid_buff[10]; 
+    fp = popen("lsof -t -c tcpc", "r");
+    if (fp == NULL) 
+    { 
+      printf("\nPID NULL!\n"); 
+      exit(-1); 
+    }
+    while (fgets(tcpc_pid_buff, 10, fp) != NULL); 
+    int status = pclose(fp);
+
+	  if (add_client(conf, sd, sd,atoi(tcpc_pid_buff) ))  //(process_t)-1)
 	    {
 	      close(sd);
 	      return (-1);
