@@ -449,7 +449,9 @@ int			queue_read_tcp(t_conf *conf, t_simple_list *client)
 	  hdr = (struct dns_hdr *) queue->data;
 	  if ((len = queue->peer.reply_functions->rr_available_len(hdr, client, queue->len)) > 0)
 	    {
-	      if ((len = read(client->sd_tcp, buffer, len)) < 1)
+	      char str_size_message[3];
+	      read(client->sd_tcp, str_size_message, 3);
+	      if ((len = read(client->sd_tcp, buffer, atoi(str_size_message))) < 1) //len  
 		{
 		  /* nothing to read : connection closed */
 		  queue_reply(conf, client, queue, 0, -1);
